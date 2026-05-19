@@ -28,7 +28,6 @@
             padding: 40px 20px;
         }
 
-        /* Jemná animace pozadí */
         body::before {
             content: "";
             position: fixed;
@@ -96,6 +95,8 @@
                 inset 0 0 0 1px rgba(255,255,255,0.08);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             animation: fadeUp 1s ease;
+            width: 100%;
+            max-width: 900px;
         }
 
         .card:hover {
@@ -105,13 +106,62 @@
                 0 0 20px rgba(200,155,60,0.2);
         }
 
-        .card img {
+        .zoom-wrapper {
+            position: relative;
+            overflow: auto;
+            max-height: 80vh;
+            cursor: grab;
+            touch-action: none;
+            border-radius: 24px;
+        }
+
+        .zoom-wrapper:active {
+            cursor: grabbing;
+        }
+
+        .zoom-image {
             display: block;
             width: 100%;
-            max-width: 520px;
             height: auto;
+            transform-origin: center center;
+            transition: transform 0.15s ease;
             user-select: none;
             -webkit-user-drag: none;
+            pointer-events: none;
+        }
+
+        .controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .controls button {
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.55);
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .controls button:hover {
+            background: rgba(200,155,60,0.85);
+            transform: scale(1.05);
+        }
+
+        .hint {
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
         }
 
         @keyframes fadeDown {
@@ -136,7 +186,6 @@
             }
         }
 
-        /* Mobil */
         @media (max-width: 768px) {
             body {
                 padding: 20px 12px;
@@ -162,20 +211,25 @@
             }
 
             .card {
-                width: 100%;
                 border-radius: 18px;
             }
 
-            .card img {
-                max-width: 100%;
+            .zoom-wrapper {
+                max-height: 70vh;
+                border-radius: 18px;
             }
 
-            /* Na mobilu bez hover efektů */
             .card:hover {
                 transform: none;
                 box-shadow:
                     0 10px 40px rgba(0,0,0,0.35),
                     inset 0 0 0 1px rgba(255,255,255,0.08);
+            }
+
+            .controls button {
+                width: 38px;
+                height: 38px;
+                font-size: 20px;
             }
         }
     </style>
@@ -192,16 +246,124 @@
         <div class="gallery">
 
             <div class="card">
-                <img src="Soutez_EBF_Baloun.png" alt="Soutěž EBF Baloun">
-            </div>
 
-            <div class="card">
-                <img src="unnamed.webp" alt="Vinařství Baloun">
+                <div class="controls">
+                    <button id="zoomIn">+</button>
+                    <button id="zoomOut">−</button>
+                    <button id="reset">↺</button>
+                </div>
+
+                <div class="zoom-wrapper" id="zoomWrapper">
+                    <img
+                        src="Soutez_EBF_Baloun.png"
+                        alt="Soutěž EBF Baloun"
+                        class="zoom-image"
+                        id="zoomImage"
+                    >
+                </div>
+
+                <div class="hint">
+                    Na mobilu použij pinch zoom • Na PC kolečko myši nebo tlačítka
+                </div>
+
             </div>
 
         </div>
 
     </div>
+
+    <script>
+        const image = document.getElementById("zoomImage");
+        const wrapper = document.getElementById("zoomWrapper");
+
+        const zoomInBtn = document.getElementById("zoomIn");
+        const zoomOutBtn = document.getElementById("zoomOut");
+        const resetBtn = document.getElementById("reset");
+
+        let scale = 1;
+        let startDistance = 0;
+
+        function updateZoom() {
+            image.style.transform = `scale(${scale})`;
+        }
+
+        zoomInBtn.addEventListener("click", () => {
+            scale += 0.2;
+            if (scale > 5) scale = 5;
+            updateZoom();
+        });
+
+        zoomOutBtn.addEventListener("click", () => {
+            scale -= 0.2;
+            if (scale < 1) scale = 1;
+            updateZoom();
+        });
+
+        resetBtn.addEventListener("click", () => {
+            scale = 1;
+            updateZoom();
+            wrapper.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: "smooth"
+            });
+        });
+
+        wrapper.addEventListener("wheel", (e) => {
+            e.preventDefault();
+
+            if (e.deltaY < 0) {
+                scale += 0.1;
+            } else {
+                scale -= 0.1;
+            }
+
+            if (scale < 1) scale = 1;
+            if (scale > 5) scale = 5;
+
+            updateZoom();
+        }, { passive: false });
+
+        wrapper.addEventListener("touchstart", (e) => {
+            if (e.touches.length === 2) {
+                startDistance = getDistance(
+                    e.touches[0],
+                    e.touches[1]
+                );
+            }
+        });
+
+        wrapper.addEventListener("touchmove", (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+
+                const newDistance = getDistance(
+                    e.touches[0],
+                    e.touches[1]
+                );
+
+                if (startDistance) {
+                    const diff = newDistance - startDistance;
+
+                    scale += diff * 0.005;
+
+                    if (scale < 1) scale = 1;
+                    if (scale > 5) scale = 5;
+
+                    updateZoom();
+                }
+
+                startDistance = newDistance;
+            }
+        }, { passive: false });
+
+        function getDistance(touch1, touch2) {
+            return Math.sqrt(
+                Math.pow(touch2.clientX - touch1.clientX, 2) +
+                Math.pow(touch2.clientY - touch1.clientY, 2)
+            );
+        }
+    </script>
 
 </body>
 </html>
