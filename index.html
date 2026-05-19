@@ -1,61 +1,212 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Soutěž - Vinařství Baloun</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
     <style>
-        body {
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background:
+                radial-gradient(circle at top left, #7b1e3a 0%, transparent 35%),
+                radial-gradient(circle at bottom right, #c89b3c 0%, transparent 30%),
+                linear-gradient(135deg, #1c0f13 0%, #2b1620 50%, #12090d 100%);
+            color: white;
+            overflow-x: hidden;
             padding: 40px 20px;
-            background: #f5f5f5;
-            font-family: Arial, sans-serif;
+        }
+
+        /* Jemná animace pozadí */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(
+                120deg,
+                rgba(255,255,255,0.03),
+                rgba(255,255,255,0)
+            );
+            animation: shine 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero {
             text-align: center;
+            margin-bottom: 50px;
+            animation: fadeDown 1s ease;
         }
 
-        h1 {
-            margin-bottom: 40px;
-            color: #333;
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #fff, #f2d38a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255,255,255,0.1);
         }
 
-        .images {
+        .hero p {
+            color: rgba(255,255,255,0.75);
+            font-size: 18px;
+            font-weight: 300;
+        }
+
+        .gallery {
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            gap: 20px;
+            gap: 30px;
             flex-wrap: wrap;
         }
 
-        .images img {
+        .card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            box-shadow:
+                0 10px 40px rgba(0,0,0,0.35),
+                inset 0 0 0 1px rgba(255,255,255,0.08);
+            transition: all 0.4s ease;
+            animation: fadeUp 1s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow:
+                0 20px 60px rgba(0,0,0,0.45),
+                0 0 25px rgba(200,155,60,0.25);
+        }
+
+        .card img {
+            display: block;
             width: 100%;
-            max-width: 500px;
+            max-width: 520px;
             height: auto;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            background: white;
+            transition: transform 0.6s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.05);
+        }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to top,
+                rgba(0,0,0,0.35),
+                transparent
+            );
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card:hover::after {
+            opacity: 1;
+        }
+
+        @keyframes fadeDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Mobil */
         @media (max-width: 768px) {
-            .images {
+            body {
+                padding: 25px 15px;
+            }
+
+            .hero {
+                margin-bottom: 35px;
+            }
+
+            .hero h1 {
+                font-size: 34px;
+                line-height: 1.2;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .gallery {
                 flex-direction: column;
                 align-items: center;
             }
 
-            h1 {
-                font-size: 24px;
+            .card img {
+                max-width: 100%;
             }
         }
     </style>
 </head>
 <body>
 
-    <h1>Soutěž - Vinařství Baloun</h1>
+    <div class="container">
 
-    <div class="images">
-        <img src="Soutez_EBF_Baloun.png" alt="Soutěž EBF Baloun">
-        <img src="unnamed.webp" alt="Vinařství Baloun">
+        <div class="hero">
+            <h1>Soutěž - Vinařství Baloun</h1>
+            <p>Zapojte se do soutěže a objevte kouzlo moravského vinařství.</p>
+        </div>
+
+        <div class="gallery">
+
+            <div class="card">
+                <img src="Soutez_EBF_Baloun.png" alt="Soutěž EBF Baloun">
+            </div>
+
+            <div class="card">
+                <img src="unnamed.webp" alt="Vinařství Baloun">
+            </div>
+
+        </div>
+
     </div>
 
 </body>
