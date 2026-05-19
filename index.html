@@ -94,15 +94,15 @@
             box-shadow:
                 0 10px 40px rgba(0,0,0,0.35),
                 inset 0 0 0 1px rgba(255,255,255,0.08);
-            transition: all 0.4s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             animation: fadeUp 1s ease;
         }
 
         .card:hover {
-            transform: translateY(-10px) scale(1.02);
+            transform: translateY(-5px);
             box-shadow:
-                0 20px 60px rgba(0,0,0,0.45),
-                0 0 25px rgba(200,155,60,0.25);
+                0 18px 50px rgba(0,0,0,0.4),
+                0 0 20px rgba(200,155,60,0.2);
         }
 
         .card img {
@@ -110,28 +110,8 @@
             width: 100%;
             max-width: 520px;
             height: auto;
-            transition: transform 0.6s ease;
-        }
-
-        .card:hover img {
-            transform: scale(1.05);
-        }
-
-        .card::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(
-                to top,
-                rgba(0,0,0,0.35),
-                transparent
-            );
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .card:hover::after {
-            opacity: 1;
+            user-select: none;
+            -webkit-user-drag: none;
         }
 
         @keyframes fadeDown {
@@ -159,15 +139,15 @@
         /* Mobil */
         @media (max-width: 768px) {
             body {
-                padding: 25px 15px;
+                padding: 20px 12px;
             }
 
             .hero {
-                margin-bottom: 35px;
+                margin-bottom: 30px;
             }
 
             .hero h1 {
-                font-size: 34px;
+                font-size: 32px;
                 line-height: 1.2;
             }
 
@@ -178,10 +158,24 @@
             .gallery {
                 flex-direction: column;
                 align-items: center;
+                gap: 20px;
+            }
+
+            .card {
+                width: 100%;
+                border-radius: 18px;
             }
 
             .card img {
                 max-width: 100%;
+            }
+
+            /* Na mobilu bez hover efektů */
+            .card:hover {
+                transform: none;
+                box-shadow:
+                    0 10px 40px rgba(0,0,0,0.35),
+                    inset 0 0 0 1px rgba(255,255,255,0.08);
             }
         }
     </style>
